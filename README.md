@@ -1,0 +1,2 @@
+# scattergories
+Game

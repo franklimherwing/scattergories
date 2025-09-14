@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scattergories Online</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        header {
+            background: #2575fc;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .letter-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2575fc;
+            background: white;
+            border: 3px solid #2575fc;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        .categories {
+            padding: 20px;
+        }
+        
+        .category {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .category-number {
+            background: #2575fc;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .category-text {
+            font-weight: bold;
+            margin-right: 15px;
+            flex: 1;
+        }
+        
+        .category-input {
+            flex: 2;
+            padding: 8px 12px;
+            border: 2px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .category-input:focus {
+            outline: none;
+            border-color: #2575fc;
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .start-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .start-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .stop-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .stop-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .new-letter-btn {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .new-letter-btn:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .instructions {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .instructions h2 {
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            .category {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .category-input {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Scattergories</h1>
+            <p>List words that start with the chosen letter for each category</p>
+        </header>
+        
+        <div class="game-info">
+            <div>
+                <div>Current Letter:</div>
+                <div class="letter-display" id="letter">-</div>
+            </div>
+            <div>
+                <div>Time Remaining:</div>
+                <div class="timer" id="timer">03:00</div>
+            </div>
+        </div>
+        
+        <div class="categories">
+            <div class="category">
+                <div class="category-number">1</div>
+                <div class="category-text">A Boy's Name</div>
+                <input type="text" class="category-input" data-category="1">
+            </div>
+            <div class="category">
+                <div class="category-number">2</div>
+                <div class="category-text">A River</div>
+                <input type="text" class="category-input" data-category="2">
+            </div>
+            <div class="category">
+                <div class="category-number">3</div>
+                <div class="category-text">An Animal</div>
+                <input type="text" class="category-input" data-category="3">
+            </div>
+            <div class="category">
+                <div class="category-number">4</div>
+                <div class="category-text">Things That Are Cold</div>
+                <input type="text" class="category-input" data-category="4">
+            </div>
+            <div class="category">
+                <div class="category-number">5</div>
+                <div class="category-text">Insects</div>
+                <input type="text" class="category-input" data-category="5">
+            </div>
+            <div class="category">
+                <div class="category-number">6</div>
+                <div class="category-text">Things You Drink</div>
+                <input type="text" class="category-input" data-category="6">
+            </div>
+            <div class="category">
+                <div class="category-number">7</div>
+                <div class="category-text">Countries</div>
+                <input type="text" class="category-input" data-category="7">
+            </div>
+            <div class="category">
+                <div class="category-number">8</div>
+                <div class="category-text">Fruits</div>
+                <input type="text" class="category-input" data-category="8">
+            </div>
+            <div class="category">
+                <div class="category-number">9</div>
+                <div class="category-text">Things in a Kitchen</div>
+                <input type="text" class="category-input" data-category="9">
+            </div>
+            <div class="category">
+                <div class="category-number">10</div>
+                <div class="category-text">Sports</div>
+                <input type="text" class="category-input" data-category="10">
+            </div>
+            <div class="category">
+                <div class="category-number">11</div>
+                <div class="category-text">School Subjects</div>
+                <input type="text" class="category-input" data-category="11">
+            </div>
+            <div class="category">
+                <div class="category-number">12</div>
+                <div class="category-text">Musical Instruments</div>
+                <input type="text" class="category-input" data-category="12">
+            </div>
+        </div>
+        
+        <div class="score-display" id="score">
+            Score: 0 points
+        </div>
+        
+        <div class="controls">
+            <button class="start-btn" id="startBtn">Start Game</button>
+            <button class="stop-btn" id="stopBtn" disabled>Stop Game</button>
+            <button class="new-letter-btn" id="newLetterBtn" disabled>New Letter</button>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h2>How to Play</h2>
+        <ul>
+            <li>Click "Start Game" to begin a 3-minute round with a random letter</li>
+            <li>Fill in each category with a word that starts with the given letter</li>
+            <li>When time is up, score points for each unique answer</li>
+            <li>Use "New Letter" to start a new round with a different letter</li>
+            <li>Score 1 point for each valid answer, 2 points if no other players have the same answer</li>
+        </ul>
+        <p>Note: This is a single-player version. For multiplayer, players would compare answers after each round.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const letterDisplay = document.getElementById('letter');
+            const timerDisplay = document.getElementById('timer');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const newLetterBtn = document.getElementById('newLetterBtn');
+            const scoreDisplay = document.getElementById('score');
+            const inputs = document.querySelectorAll('.category-input');
+            
+            let timer;
+            let timeLeft = 180; // 3 minutes in seconds
+            let currentLetter = '';
+            let gameActive = false;
+            
+            // Letters with higher probability of having more answers
+            const commonLetters = ['S', 'C', 'P', 'T', 'M', 'A', 'B', 'D', 'F', 'G', 'H', 'L', 'R'];
+            const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            
+            // Generate a random letter
+            function getRandomLetter() {
+                // 70% chance of a common letter
+                if (Math.random() < 0.7) {
+                    return commonLetters[Math.floor(Math.random() * commonLetters.length)];
+                } else {
+                    return allLetters[Math.floor(Math.random() * allLetters.length)];
+                }
+            }
+            
+            // Update timer display
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 10) {
+                    timerDisplay.classList.add('pulse');
+                } else {
+                    timerDisplay.classList.remove('pulse');
+                }
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                } else {
+                    timeLeft--;
+                }
+            }
+            
+            // Start the game
+            function startGame() {
+                if (gameActive) return;
+                
+                // Clear previous inputs
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.disabled = false;
+                });
+                
+                // Get a new random letter
+                currentLetter = getRandomLetter();
+                letterDisplay.textContent = currentLetter;
+                
+                // Reset and start timer
+                timeLeft = 180;
+                updateTimer();
+                timer = setInterval(updateTimer, 1000);
+                
+                // Update game state
+                gameActive = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                newLetterBtn.disabled = true;
+                
+                // Focus on first input
+                inputs[0].focus();
+                
+                // Reset score
+                scoreDisplay.textContent = 'Score: 0 points';
+            }
+            
+            // End the game
+            function endGame() {
+                clearInterval(timer);
+                gameActive = false;
+                
+                // Disable inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                });
+                
+                // Calculate score
+                calculateScore();
+                
+                // Update buttons
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                newLetterBtn.disabled = false;
+            }
+            
+            // Calculate score
+            function calculateScore() {
+                let score = 0;
+                
+                inputs.forEach(input => {
+                    const value = input.value.trim();
+                    if (value !== '' && value.charAt(0).toUpperCase() === currentLetter) {
+                        score += 1;
+                    }
+                });
+                
+                scoreDisplay.textContent = `Score: ${score} points`;
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            
+            stopBtn.addEventListener('click', function() {
+                if (gameActive) {
+                    endGame();
+                }
+            });
+            
+            newLetterBtn.addEventListener('click', startGame);
+            
+            // Allow pressing Enter to move to next input
+            inputs.forEach((input, index) => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        } else {
+                            // If last input, submit the form
+                            endGame();
+                        }
+                    }
+                });
+            });
+            
+            // Initialize with a letter but not started
+            currentLetter = getRandomLetter();
+            letterDisplay.textContent = '?';
+        });
+    </script>
+</body>
+</html>

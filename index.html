@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scattergories v3</title>
+    <title>Scattergories v4</title>
     <style>
         * {
             box-sizing: border-box;
@@ -93,10 +93,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 15px;
-        }
-        
-        .categories {
-            display: none;
+            position: relative;
         }
         
         .category {
@@ -105,6 +102,7 @@
             margin-bottom: 8px;
             padding-bottom: 8px;
             border-bottom: 1px solid #eee;
+            position: relative;
         }
         
         .category-number {
@@ -120,6 +118,7 @@
             flex-shrink: 0;
             font-weight: bold;
             font-size: 0.9rem;
+            z-index: 2;
         }
         
         .category-text {
@@ -128,6 +127,8 @@
             flex: 1;
             color: #333;
             font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
         }
         
         .category-input {
@@ -140,6 +141,8 @@
             background: #f9f9f9;
             color: #333;
             min-width: 0;
+            position: relative;
+            z-index: 2;
         }
         
         .category-input:focus {
@@ -220,27 +223,6 @@
             flex-shrink: 0;
         }
         
-        .welcome-message {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .welcome-message h2 {
-            margin-bottom: 15px;
-            color: #000;
-        }
-        
-        .welcome-message p {
-            margin-bottom: 10px;
-            max-width: 500px;
-        }
-        
         @media (max-width: 600px) {
             header {
                 flex-direction: column;
@@ -297,6 +279,39 @@
             vertical-align: super;
             margin-left: 5px;
         }
+        
+        .blackout {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.95),
+                rgba(0, 0, 0, 0.95) 2px,
+                #000 2px,
+                #000 4px
+            );
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.5s ease;
+        }
+        
+        .blackout-text {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            max-width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -308,83 +323,81 @@
             </div>
             
             <div class="game-title">
-                <h1>Scattergories<span class="version">v3</span></h1>
+                <h1>Scattergories<span class="version">v4</span></h1>
             </div>
             
-            <div class="letter-display" id="letter">-</div>
+            <div class="letter-display" id="letter">?</div>
         </header>
         
         <div class="score-display" id="score">
             Score: 0 points
         </div>
         
-        <div class="welcome-message" id="welcomeMessage">
-            <h2>Welcome to Scattergories v3</h2>
-            <p>Click "Start Game" to begin! You'll have 3 minutes to come up with words that start with the given letter for each category.</p>
-            <p>Points are awarded for each valid answer.</p>
-        </div>
-        
         <div class="categories-container">
+            <div class="blackout" id="blackout">
+                <div class="blackout-text">Questions will be revealed when you start the game</div>
+            </div>
+            
             <div class="categories" id="categories">
                 <div class="category">
                     <div class="category-number">1</div>
                     <div class="category-text">A Boy's Name</div>
-                    <input type="text" class="category-input" data-category="1">
+                    <input type="text" class="category-input" data-category="1" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">2</div>
                     <div class="category-text">A River</div>
-                    <input type="text" class="category-input" data-category="2">
+                    <input type="text" class="category-input" data-category="2" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">3</div>
                     <div class="category-text">An Animal</div>
-                    <input type="text" class="category-input" data-category="3">
+                    <input type="text" class="category-input" data-category="3" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">4</div>
                     <div class="category-text">Things That Are Cold</div>
-                    <input type="text" class="category-input" data-category="4">
+                    <input type="text" class="category-input" data-category="4" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">5</div>
                     <div class="category-text">Insects</div>
-                    <input type="text" class="category-input" data-category="5">
+                    <input type="text" class="category-input" data-category="5" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">6</div>
                     <div class="category-text">Things You Drink</div>
-                    <input type="text" class="category-input" data-category="6">
+                    <input type="text" class="category-input" data-category="6" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">7</div>
                     <div class="category-text">Countries</div>
-                    <input type="text" class="category-input" data-category="7">
+                    <input type="text" class="category-input" data-category="7" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">8</div>
                     <div class="category-text">Fruits</div>
-                    <input type="text" class="category-input" data-category="8">
+                    <input type="text" class="category-input" data-category="8" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">9</div>
                     <div class="category-text">Things in a Kitchen</div>
-                    <input type="text" class="category-input" data-category="9">
+                    <input type="text" class="category-input" data-category="9" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">10</div>
                     <div class="category-text">Sports</div>
-                    <input type="text" class="category-input" data-category="10">
+                    <input type="text" class="category-input" data-category="10" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">11</div>
                     <div class="category-text">School Subjects</div>
-                    <input type="text" class="category-input" data-category="11">
+                    <input type="text" class="category-input" data-category="11" disabled>
                 </div>
                 <div class="category">
                     <div class="category-number">12</div>
                     <div class="category-text">Musical Instruments</div>
-                    <input type="text" class="category-input" data-category="12">
+                    <input type="text" class="category-input" data-category="12" disabled>
                 </div>
             </div>
         </div>
@@ -404,8 +417,7 @@
             const stopBtn = document.getElementById('stopBtn');
             const newLetterBtn = document.getElementById('newLetterBtn');
             const scoreDisplay = document.getElementById('score');
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            const categories = document.getElementById('categories');
+            const blackout = document.getElementById('blackout');
             const inputs = document.querySelectorAll('.category-input');
             
             let timer;
@@ -450,14 +462,16 @@
             function startGame() {
                 if (gameActive) return;
                 
-                // Show categories, hide welcome message
-                categories.style.display = 'block';
-                welcomeMessage.style.display = 'none';
+                // Remove blackout
+                blackout.style.opacity = '0';
+                setTimeout(() => {
+                    blackout.style.display = 'none';
+                }, 500);
                 
-                // Clear previous inputs
+                // Enable inputs
                 inputs.forEach(input => {
-                    input.value = '';
                     input.disabled = false;
+                    input.value = '';
                 });
                 
                 // Get a new random letter
@@ -525,12 +539,19 @@
             });
             
             newLetterBtn.addEventListener('click', function() {
-                // Show welcome message, hide categories
-                categories.style.display = 'none';
-                welcomeMessage.style.display = 'flex';
+                // Show blackout again
+                blackout.style.display = 'flex';
+                setTimeout(() => {
+                    blackout.style.opacity = '1';
+                }, 10);
+                
+                // Disable inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                });
                 
                 // Reset letter display
-                letterDisplay.textContent = '-';
+                letterDisplay.textContent = '?';
                 
                 // Reset timer
                 timerDisplay.textContent = '03:00';
@@ -559,9 +580,6 @@
                     }
                 });
             });
-            
-            // Initialize
-            letterDisplay.textContent = '?';
         });
     </script>
 </body>
